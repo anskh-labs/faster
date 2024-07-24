@@ -1,0 +1,35 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:faster}/writable/data/fasterdb.db",
+            "name": "sqlite_fasterdb"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "mysql_fasterdb",
+            "username": "root",
+            "database": "fasterdb",
+            "password": ""
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "database": "fasterdb",
+            "username": "postgres",
+            "name": "pgsql_fasterdb"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

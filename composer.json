@@ -1,0 +1,48 @@
+{
+  "name": "anskh-labs/faster",
+  "type": "project",
+  "version": "1.0.0",
+  "require": {
+    "php": ">=8.2",
+    "nikic/fast-route": "^1.3",
+    "filp/whoops": "^2.15",
+    "vlucas/phpdotenv": "^5.6",
+    "monolog/monolog": "^2.9",
+    "laminas/laminas-diactoros": "^3.3",
+    "laminas/laminas-httphandlerrunner": "^2.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "Faster\\": "src/",
+      "App\\": "app/"
+    },
+    "files": [
+      "src/functions.php",
+      "app/functions.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "Khaerul Anas",
+      "email": "anasikova@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "scripts": {
+    "post-update-cmd": [
+      "composer dump-autoload"
+    ],
+    "db:migrate": [
+      "php -f migrations.php up",
+      "php -f migrations.php seed"
+    ],
+    "db:up": "php -f migrations.php up",
+    "db:seed": "php -f migrations.php seed",
+    "db:down": "php -f migrations.php down"
+  },
+  "config": {
+    "platform": {
+      "php": "8.2.0" 
+    }
+  }
+}
