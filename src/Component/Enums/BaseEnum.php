@@ -27,6 +27,8 @@ abstract class BaseEnum
 
     /**
      * Get all the items in the enum
+     * 
+     * @return array
      */
     public static function all(): array
     {
@@ -39,6 +41,8 @@ abstract class BaseEnum
 
     /**
      * Get all the declared keys
+     * 
+     * @return array
      */
     public static function keys(): array
     {
@@ -47,6 +51,8 @@ abstract class BaseEnum
 
     /**
      * Get all the declared values
+     * 
+     * @return array
      */
     public static function values(): array
     {
@@ -55,6 +61,9 @@ abstract class BaseEnum
 
     /**
      * Check if the given key declared in the enum or not
+     * 
+     * @param  string $key
+     * @return bool
      */
     public static function hasKey(string $key): bool
     {
@@ -65,6 +74,7 @@ abstract class BaseEnum
      * Check if the given value declared in the enum or not
      *
      * @param mixed $value
+     * @return bool
      */
     public static function hasValue(mixed $value): bool
     {
@@ -76,10 +86,9 @@ abstract class BaseEnum
      *
      * @param string $key
      * @param mixed $default
-     *
-     * @return mixed|null
+     * @return mixed
      */
-    public static function valueOf(string $key, mixed $default = null)
+    public static function valueOf(string $key, mixed $default = null): mixed
     {
         return static::all()[$key] ?? $default;
     }
@@ -88,6 +97,7 @@ abstract class BaseEnum
      * Get related keys of the given value
      *
      * @param mixed $value
+     * @return array
      */
     public static function keysOf(mixed $value): array
     {
@@ -107,10 +117,9 @@ abstract class BaseEnum
      *
      * @param mixed $value
      * @param mixed $default
-     *
      * @return mixed
      */
-    public static function keyOf(mixed $value, mixed $default = null)
+    public static function keyOf(mixed $value, mixed $default = null): mixed
     {
         return static::keysOf($value)[0] ?? $default;
     }    

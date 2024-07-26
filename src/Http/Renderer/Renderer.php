@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Faster\Http\Renderer;
 
+use Faster\Component\Contract\MultitonTrait;
+use Faster\Helper\View;
+
 /**
  * Renderer
  * -----------
@@ -15,8 +18,9 @@ namespace Faster\Http\Renderer;
  */
 class Renderer implements RendererInterface
 {
+    use MultitonTrait;
+    
     private array $params = [];
-    private string $viewPath;
     private string $fileExtension;
 
     /**
@@ -26,10 +30,15 @@ class Renderer implements RendererInterface
      * @param  string $fileExtension
      * @return void
      */
-    public function __construct(string $viewPath, string $fileExtension = '.phtml')
+    final private function __construct(private string $viewPath)
     {
-        $this->viewPath = $viewPath;
-        $this->fileExtension = $fileExtension;
+        $this->fileExtension = View::defaultViewExtension();
+    }
+    final function __clone()
+    {
+    }
+    final function __wakeup()
+    {
     }
     /**
      * @inheritdoc

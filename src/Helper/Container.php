@@ -17,8 +17,6 @@ use Faster\Container\BasicContainer;
  */
 class Container
 {
-    private static ?BasicContainer $container = null;
-
     /**
      * get
      *
@@ -28,13 +26,10 @@ class Container
      */
     public static function get(string $id, ?array $params = null, bool $shared = false)
     {
-        if (static::$container === null) {
-            static::$container = new BasicContainer();
-        }
         if ($shared) {
-            return static::$container->getShared($id, $params);
+            return BasicContainer::getInstance()->getShared($id, $params);
         } else {
-            return static::$container->get($id, $params);
+            return BasicContainer::getInstance()->get($id, $params);
         }
     }
 }

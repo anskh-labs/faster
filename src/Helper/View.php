@@ -18,29 +18,23 @@ use Faster\Http\Renderer\Renderer;
  */
 class View
 {
-    private static ?RendererInterface $renderer = null;
-
-    /**
-     * init
-     *
-     * @param  array $viewPath
-     * @param  string $fileExtension
-     * @return void
-     */
-    public static function init(string $viewPath, string $fileExtension = '.phtml')
-    {
-        static::$renderer = make(Renderer::class, [$viewPath, $fileExtension]);
-    }    
     /**
      * renderer
      *
+     * @param  null|string $path
      * @return RendererInterface
      */
-    public static function renderer(): RendererInterface
+    public static function renderer(null|string $path = null): RendererInterface
+    { 
+        $path = $path ?? static::defaultViewPath();
+        return Renderer::getInstance($path);
+    }
+    public static function defaultViewPath(): string
     {
-        if(static::$renderer === null){
-            throw new \Exception('Create view renderer first by call View::init.');      
-        }
-        return static::$renderer;
+        return config('app.view.path');
+    }
+    public static function defaultViewExtension(): string
+    {
+        return config('app.view.extension');
     }
 }

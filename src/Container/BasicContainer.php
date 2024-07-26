@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Faster\Container;
 
+use Faster\Component\Contract\SingletonTrait;
+
 /**
  * Basic container
  * -----------
@@ -16,16 +18,24 @@ namespace Faster\Container;
  */
 class BasicContainer
 {
-    private array $container = [];
+    use SingletonTrait;
+
+    private array $container = [];    
+    /**
+     * __construct
+     *
+     * @return void
+     */
+    final private function __construct(){}
 
     /**
      * get
      *
      * @param  string $id
      * @param  ?array $params
-     * @return void
+     * @return mixed
      */
-    public function get(string $id, ?array $params = null)
+    public function get(string $id, ?array $params = null): mixed
     {
         if ($this->has($id)) {
             if (isset($this->container[$id])) {
@@ -47,9 +57,9 @@ class BasicContainer
      *
      * @param  string $id
      * @param  ?array $params
-     * @return void
+     * @return mixed
      */
-    public function getShared(string $id, ?array $params = null)
+    public function getShared(string $id, ?array $params = null): mixed
     {
         if ($this->has($id)) {
             if (!isset($this->container[$id])) {

@@ -21,7 +21,6 @@ use PDO;
  */
 class MigrationCommand implements CommandInterface
 {
-    private Database $db;
     private string $table;
     private string $path;
 
@@ -33,9 +32,8 @@ class MigrationCommand implements CommandInterface
      * @param  string $migrationPath
      * @return void
      */
-    public function __construct(Database $db, string $migrationTable, string $migrationPath)
+    public function __construct(private Database $db, string $migrationTable, string $migrationPath)
     {
-        $this->db = $db;
         $this->table = $this->db->getTable($migrationTable);
         if (is_dir($migrationPath)) {
             $this->path = $migrationPath;
@@ -101,7 +99,7 @@ class MigrationCommand implements CommandInterface
      *
      * @return void
      */
-    protected function createIfNotExistMigrationsTable(): void
+    protected function createIfNotExistMigrationsTable():void
     {
         $type = $this->db->getType();
         $columns = [];
@@ -170,7 +168,7 @@ class MigrationCommand implements CommandInterface
      * @param  string $action
      * @return void
      */
-    protected function saveMigrations(array $migrations, string $action): void
+    protected function saveMigrations(array $migrations, string $action)
     {
         $data = array_map(fn ($migration) => ['migration' => $migration, 'action' => $action], $migrations);
         $this->db->insert($data, $this->table, true);
@@ -182,7 +180,7 @@ class MigrationCommand implements CommandInterface
      * @param  string $message
      * @return void
      */
-    protected function log(string $message): void
+    protected function log(string $message)
     {
         echo '[' . date('Y-m-d H:i:s') . '] - ' . $message . PHP_EOL;
     }

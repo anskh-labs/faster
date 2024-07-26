@@ -17,19 +17,18 @@ use Faster\Http\Router\RouterInterface;
  * @package Faster\Helper
  */
 class Router
-{    
-    private static ?RouterInterface $router = null;
-
+{  
+    private static string $route;
     /**
      * make
      *
-     * @param  array $routes
+     * @param  string $route
      * @return RouterInterface
      */
-    public static function make(array $routes): RouterInterface
+    public static function make(string $route): RouterInterface
     {
-        static::$router = new SimpleRouter($routes);
-        return static::$router;
+        static::$route = $route;
+        return SimpleRouter::getInstance($route);
     }
     /**
      * get route definition based on route name
@@ -38,11 +37,7 @@ class Router
      */
     public static function get(string $name): array
     {
-        if(static::$router === null){
-            throw new \Exception('Create router first by call Router::make first.');
-        }
-        
-        return static::$router->getRoute($name);
+        return SimpleRouter::getInstance(static::$route)->getRoute($name);
     }    
     /**
      * exists
@@ -52,10 +47,6 @@ class Router
      */
     public static function exists(string $name): bool
     {
-        if(static::$router === null){
-            throw new \Exception('Create router first by call Router::make first.');
-        }
-
-        return static::$router->routeExists($name);
+        return SimpleRouter::getInstance(static::$route)->routeExists($name);
     }
 }

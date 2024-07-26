@@ -15,9 +15,9 @@ use Faster\Html\Form;
 use Faster\Http\Auth\UserPrincipalInterface;
 use Faster\Http\Session\SessionInterface;
 use Faster\Model\FormModel;
-use HttpSoft\Message\Response;
-use HttpSoft\Response\JsonResponse;
-use HttpSoft\Response\RedirectResponse;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 
 /**

@@ -6,8 +6,6 @@ namespace Faster\Helper;
 
 use Faster\Http\Auth\UserPrincipalInterface;
 use Faster\Http\Session\SessionInterface;
-use HttpSoft\Message\Response;
-use HttpSoft\ServerRequest\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -22,43 +20,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Service
 {
-    protected static ?ServerRequestInterface $request = null;
-    protected static ?ResponseInterface $response = null;
-
-    /**
-     * request
-     *
-     * @param  ?ServerRequestInterface $request
-     * @return ServerRequestInterface
-     */
-    public static function request(?ServerRequestInterface $request = null): ServerRequestInterface
-    {
-        if ($request !== null) {
-            static::$request = $request;
-        }
-        if (static::$request === null) {
-            static::$request = ServerRequestCreator::createFromGlobals();
-        }
-
-        return static::$request;
-    }
-    /**
-     * response
-     *
-     * @param  ?ResponseInterface $response
-     * @return ResponseInterface
-     */
-    public static function response(?ResponseInterface $response = null): ResponseInterface
-    {
-        if ($response !== null) {
-            static::$response = $response;
-        }
-        if (static::$response === null) {
-            static::$response = new Response();
-        }
-
-        return static::$response;
-    }
     /**
      * session
      *
@@ -67,7 +28,7 @@ class Service
      */
     public static function session(string $sessionAttribute = '__session'): SessionInterface
     {
-        $session = static::$request->getAttribute($sessionAttribute);
+        $session = App::request()->getAttribute($sessionAttribute);
         if($session instanceof SessionInterface){
             return $session;
         }
@@ -82,7 +43,7 @@ class Service
      */
     public static function user(string $userAttribute = '__user'): UserPrincipalInterface
     {
-        $user = static::$request->getAttribute($userAttribute);
+        $user = App::request()->getAttribute($userAttribute);
         if($user instanceof UserPrincipalInterface){
             return $user;
         }

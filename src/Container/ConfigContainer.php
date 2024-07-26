@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Faster\Container;
 
 use ArrayAccess;
+use Faster\Component\Contract\MultitonTrait;
 
 /**
  * Configuration container
@@ -18,27 +19,32 @@ use ArrayAccess;
  */
 class ConfigContainer implements ArrayAccess
 {
+    use MultitonTrait;
+
     private array $container = [];
-    private string $path;
     private string $env;
 
     /**
      * __construct
      *
      * @param  string $path
-     * @param  string $environment
      * @return void
      */
-    public function __construct(string $path, string $environment)
+    final private function __construct(private string $path)
     {
-        $this->path = $path;
-        $this->env = $environment;
+        $this->env = $_ENV['APP_ENV'] ?? 'development';
+    }
+    final function __clone()
+    {
+    }
+    final function __wakeup()
+    {
     }
 
     /**
      * @inheritdoc
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         if (isset($this->container[$offset])) {
             return true;
@@ -83,7 +89,7 @@ class ConfigContainer implements ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->offsetExists($offset) ? $this->container[$offset] : null;
     }
@@ -91,7 +97,7 @@ class ConfigContainer implements ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             $this->container[] = $value;
@@ -103,10 +109,10 @@ class ConfigContainer implements ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->container[$offset]);
-    }    
+    }
     /**
      * getPath
      *

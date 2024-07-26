@@ -14,9 +14,7 @@ namespace Faster\Console;
  * @package Faster\Console
  */
 class Application
-{      
-    private CommandInterface $command;
-    private string $action;
+{ 
     /**
      * __construct
      *
@@ -24,10 +22,8 @@ class Application
      * @param  string $action
      * @return void
      */
-    public function __construct(CommandInterface $command, string $action)
+    public function __construct(private CommandInterface $command, private string $action)
     {
-        $this->command = $command;
-        $this->action = $action;
     }
     
     /**

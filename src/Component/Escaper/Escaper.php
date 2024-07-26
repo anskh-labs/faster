@@ -37,19 +37,17 @@ use const ENT_SUBSTITUTE;
  */
 class Escaper
 {
-    protected static $htmlNamedEntityMap = [
+    protected static array $htmlNamedEntityMap = [
         34 => 'quot', // quotation mark
         38 => 'amp', // ampersand
         60 => 'lt', // less-than sign
         62 => 'gt', // greater-than sign
     ];
-
-    protected $encoding = 'utf-8';
     protected $htmlSpecialCharsFlags;
     protected $htmlAttrMatcher;
     protected $jsMatcher;
     protected $cssMatcher;
-    protected $supportedEncodings = [
+    protected array $supportedEncodings = [
         'iso-8859-1',
         'iso8859-1',
         'iso-8859-5',
@@ -92,24 +90,21 @@ class Escaper
      * @param  mixed $encoding
      * @return void
      */
-    public function __construct(string $encoding = 'utf-8')
+    public function __construct(private string $encoding = 'utf-8')
     {
-        if ($encoding === '') {
+        if ($this->encoding === '') {
             throw new InvalidArgumentException(
                 static::class . ' constructor parameter does not allow a blank value'
             );
         }
 
-        $encoding = strtolower($encoding);
-        if (! in_array($encoding, $this->supportedEncodings)) {
+        $this->encoding = strtolower($this->encoding);
+        if (! in_array($this->encoding, $this->supportedEncodings)) {
             throw new InvalidArgumentException(
-                'Value of \'' . $encoding . '\' passed to ' . static::class
+                'Value of \'' . $this->encoding . '\' passed to ' . static::class
                 . ' constructor parameter is invalid. Provide an encoding supported by htmlspecialchars()'
             );
-        }
-
-        $this->encoding = $encoding;
-        
+        }        
 
         // We take advantage of ENT_SUBSTITUTE flag to correctly deal with invalid UTF-8 sequences.
         $this->htmlSpecialCharsFlags = ENT_QUOTES | ENT_SUBSTITUTE;

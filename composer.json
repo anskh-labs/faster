@@ -8,17 +8,18 @@
     "filp/whoops": "^2.15",
     "vlucas/phpdotenv": "^5.6",
     "monolog/monolog": "^2.9",
+    "psr/http-message": "^2.0",
     "laminas/laminas-diactoros": "^3.3",
+    "psr/http-server-middleware": "^1.0",
+    "psr/http-server-handler": "^1.0",
     "laminas/laminas-httphandlerrunner": "^2.10"
   },
   "autoload": {
     "psr-4": {
-      "Faster\\": "src/",
-      "App\\": "app/"
+      "Faster\\": "src/"
     },
     "files": [
-      "src/functions.php",
-      "app/functions.php"
+      "src/functions.php"
     ]
   },
   "authors": [
@@ -39,10 +40,5 @@
     "db:up": "php -f migrations.php up",
     "db:seed": "php -f migrations.php seed",
     "db:down": "php -f migrations.php down"
-  },
-  "config": {
-    "platform": {
-      "php": "8.2.0" 
-    }
   }
 }

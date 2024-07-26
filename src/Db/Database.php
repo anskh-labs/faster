@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Faster\Db;
 
+use Faster\Component\Contract\MultitonTrait;
 use Faster\Component\Enums\DatabaseEnum;
+use Faster\Helper\Db;
 use PDO;
 use PDOStatement;
 
@@ -19,32 +21,34 @@ use PDOStatement;
  */
 class Database
 {
+    use MultitonTrait;
+
     private PDO $pdo;
-    private string $name;
     private ?string $prefix;
     private string $type;
-
-    const DSN   = 'dsn';
-    const USER  = 'user';
-    const PASS  = 'password';
 
     /**
      * __construct
      *
      * @param  string $name
-     * @param  string $dsn
-     * @param  ?string $username
-     * @param  ?string $password
-     * @param  ?string $prefix
-     * @param  ?array $options
      * @return void
      */
-    public function __construct(string $name, string $dsn, ?string $username = null, ?string $password = null, ?string $prefix = null, ?array $options = null)
+    final private function __construct(private string $name)
     {
-        $this->name = $name;
-        $this->prefix = $prefix ?? '';
-        $this->pdo = new PDO($dsn, $username, $password, $options);
+        $config = Db::options($name);
+        $dsn = $config[Db::DSN] ?? '';
+        $username = $config[Db::USERNAME] ?? null;
+        $password = $config[Db::PASSWORD] ?? null;
+        $pdo_options = $config[Db::PDO_OPTIONS] ?? null;
+        $this->pdo = new PDO($dsn, $username, $password, $pdo_options);
+        $this->prefix = $config[Db::TABLE_PREFIX] ?? null;
         $this->type = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    }
+    final function __clone()
+    {
+    }
+    final function __wakeup()
+    {
     }
     /**
      * exec
@@ -316,7 +320,7 @@ class Database
         $result = $stmt->fetch(PDO::FETCH_COLUMN);
 
         return intval($result) === 1 ? true : false;
-    }    
+    }
     /**
      * drop
      *
@@ -327,13 +331,13 @@ class Database
     public function drop(string $table, bool $checkExist = false): bool
     {
         $sql = "DROP TABLE ";
-        if($checkExist){
-            if($this->type === DatabaseEnum::SQLSRV){
+        if ($checkExist) {
+            if ($this->type === DatabaseEnum::SQLSRV) {
                 $sql = "IF OBJECT_ID('{$table}', 'U') IS NULL " . $sql . $table;
-            }else{
+            } else {
                 $sql .= "IF EXISTS $table";
             }
-        }else{
+        } else {
             $sql .= $table;
         }
         $result = $this->pdo->exec($sql);
@@ -366,10 +370,10 @@ class Database
     public function create(string $table, array $columns, array $primary = [], array $unique = [], ?string $attribute = null, bool $checkExist = false): bool
     {
         $sql = "CREATE TABLE ";
-        if($checkExist){
-            if($this->type === DatabaseEnum::SQLSRV){
+        if ($checkExist) {
+            if ($this->type === DatabaseEnum::SQLSRV) {
                 $sql = "IF OBJECT_ID('{$table}', 'U') IS NULL " . $sql;
-            }else{
+            } else {
                 $sql .= "IF NOT EXISTS ";
             }
         }

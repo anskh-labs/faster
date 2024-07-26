@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Faster\Http\Router;
 
+use Faster\Component\Contract\MultitonTrait;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Faster\Helper\Url;
@@ -21,18 +22,27 @@ use function FastRoute\simpleDispatcher;
  */
 class Router implements RouterInterface
 {
+    use MultitonTrait;
+
     private array $routes = [];
             
     /**
      * __construct
      *
-     * @param  mixed $routes
+     * @param  string $route
      * @return void
      */
-    public function __construct(array $routes)
+    final private function __construct(string $route)
     {
+        $routes = config($route);
         $this->validate($routes);
     }    
+    final function __clone()
+    {
+    }
+    final function __wakeup()
+    {
+    }
     /**
      * validate
      *
