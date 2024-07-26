@@ -1,6 +1,6 @@
 {
   "name": "anskh-labs/faster",
-  "type": "project",
+  "type": "library",
   "version": "1.0.0",
   "require": {
     "php": ">=8.2",
