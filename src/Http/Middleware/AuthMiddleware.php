@@ -18,7 +18,7 @@ use Faster\Http\Auth\UserPrincipalInterface;
  * -----------
  * AuthMiddleware
  *
- * @author Khaerul Anas <anasikova@gmail.com>
+ * @author Khaerul Anas <khaerulanas@live.com>
  * @since v1.0.0
  * @package Faster\Http\Middleware
  */
