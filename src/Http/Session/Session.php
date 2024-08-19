@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Faster\Http\Session;
 
+use Faster\Component\Enums\FlashMessageEnum;
+
 /**
  * Session
  * -----------
@@ -40,7 +42,7 @@ class Session implements SessionInterface
     /**
      * @inheritdoc
      */
-    public function validateCsrfToken(string $name, ?string $token): bool
+    public function validateCsrfToken(string $name, string|null $token): bool
     {
         $result = hash_equals($token, $this->csrfToken($name, false));
         unset($_SESSION[self::CSRF][$name]);
@@ -63,7 +65,7 @@ class Session implements SessionInterface
     /**
      * @inheritdoc
      */
-    public function get(?string $property = null, $defaultValue = null)
+    public function get(string|null $property = null, $defaultValue = null)
     {
         if ($property === null) {
             return $_SESSION ?? $defaultValue;
@@ -74,7 +76,7 @@ class Session implements SessionInterface
     /**
      * @inheritdoc
      */
-    public function validateCaptcha(string $formName, ?string $captcha): bool
+    public function validateCaptcha(string $formName, string|null $captcha): bool
     {
         $result = ($captcha === $_SESSION[self::CAPTCHA][$formName]);
         unset($_SESSION[self::CAPTCHA][$formName]);
@@ -84,14 +86,14 @@ class Session implements SessionInterface
     /**
      * @inheritdoc
      */
-    public function has(?string $property = null): bool
+    public function has(string|null $property = null): bool
     {
         return $property === null ? isset($_SESSION) : isset($_SESSION[$property]);
     }
     /**
      * @inheritdoc
      */
-    public function unset(?string $property = null)
+    public function unset(string|null $property = null)
     {
         $value = $this->get($property);
         if ($property) {
@@ -107,63 +109,63 @@ class Session implements SessionInterface
      */
     public function addFlashInfo(string $message): void
     {
-        $this->addFlash(FlashMessage::INFO, $message);
+        $this->addFlash(FlashMessageEnum::INFO, $message);
     }
     /**
      * @inheritdoc
      */
-    public function flashInfo(): ?FlashMessage
+    public function flashInfo(): FlashMessage|null
     {
-        return $this->flash(FlashMessage::INFO);
+        return $this->flash(FlashMessageEnum::INFO);
     }
     /**
      * @inheritdoc
      */
     public function addFlashError(string $message): void
     {
-        $this->addFlash(FlashMessage::ERROR, $message);
+        $this->addFlash(FlashMessageEnum::ERROR, $message);
     }
     /**
      * @inheritdoc
      */
-    public function flashError(): ?FlashMessage
+    public function flashError(): FlashMessage|null
     {
-        return $this->flash(FlashMessage::ERROR);
+        return $this->flash(FlashMessageEnum::ERROR);
     }
     /**
      * @inheritdoc
      */
     public function addFlashWarning(string $message): void
     {
-        $this->addFlash(FlashMessage::WARNING, $message);
+        $this->addFlash(FlashMessageEnum::WARNING, $message);
     }
     /**
      * @inheritdoc
      */
-    public function flashWarning(): ?FlashMessage
+    public function flashWarning(): FlashMessage|null
     {
-        return $this->flash(FlashMessage::WARNING);
+        return $this->flash(FlashMessageEnum::WARNING);
     }
     /**
      * @inheritdoc
      */
     public function addFlashSuccess(string $message): void
     {
-        $this->addFlash(FlashMessage::SUCCESS, $message);
+        $this->addFlash(FlashMessageEnum::SUCCESS, $message);
     }
     /**
      * @inheritdoc
      */
-    public function flashSuccess(): ?FlashMessage
+    public function flashSuccess(): FlashMessage|null
     {
-        return $this->flash(FlashMessage::SUCCESS);
+        return $this->flash(FlashMessageEnum::SUCCESS);
     }
     /**
      * @inheritdoc
      */
     public function addFlash(string $type, string $message): void
     {
-        $flash = make(FlashMessage::class, ['args' => [$type], 'shared' => false]);
+        $flash = make(FlashMessage::class, [$type]);
         if (!isset($_SESSION[self::FLASH][$type])) {
             $_SESSION[self::FLASH][$type] = $flash;
         } else {
@@ -174,7 +176,7 @@ class Session implements SessionInterface
     /**
      * @inheritdoc
      */
-    public function flash(?string $type = null)
+    public function flash(string|null $type = null)
     {
         if ($type === null) {
             $flash = $this->unset(self::FLASH);
@@ -187,7 +189,7 @@ class Session implements SessionInterface
     /**
      * @inheritdoc
      */
-    public function hasFlash(?string $type = null): bool
+    public function hasFlash(string|null $type = null): bool
     {
         return $type === null ? isset($_SESSION[self::FLASH]) : isset($_SESSION[self::FLASH][$type]);
     }
@@ -196,27 +198,27 @@ class Session implements SessionInterface
      */
     public function hasFlashSuccess(): bool
     {
-        return $this->hasFlash(FlashMessage::SUCCESS);
+        return $this->hasFlash(FlashMessageEnum::SUCCESS);
     }
     /**
      * @inheritdoc
      */
     public function hasFlashError(): bool
     {
-        return $this->hasFlash(FlashMessage::ERROR);
+        return $this->hasFlash(FlashMessageEnum::ERROR);
     }
     /**
      * @inheritdoc
      */
     public function hasFlashWarning(): bool
     {
-        return $this->hasFlash(FlashMessage::WARNING);
+        return $this->hasFlash(FlashMessageEnum::WARNING);
     }
     /**
      * @inheritdoc
      */
     public function hasFlashInfo(): bool
     {
-        return $this->hasFlash(FlashMessage::INFO);
+        return $this->hasFlash(FlashMessageEnum::INFO);
     }
 }

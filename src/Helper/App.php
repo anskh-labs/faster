@@ -47,14 +47,32 @@ class App
      */
     public static function debug() : bool
     {
-        return (bool)config('app.debug');
-    }    
+        return config('app.debug');
+    }
     /**
-     * name
+     * isMaintenanceMode
      *
      * @return bool
      */
-    public static function name() : bool
+    public static function isMaintenanceMode() : bool
+    {
+        return config('app.is_maintenance');
+    }  
+    /**
+     * url
+     *
+     * @return string
+     */
+    public static function url() : string
+    {
+        return config('app.url');
+    }
+    /**
+     * name
+     *
+     * @return string
+     */
+    public static function name() : string
     {
         return config('app.name');
     }    

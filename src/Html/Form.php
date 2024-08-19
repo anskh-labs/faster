@@ -19,33 +19,30 @@ use Faster\Model\FormModel;
  */
 class Form
 {
-    private ?FormModel $model = null;
 
     /**
      * __construct
      *
-     * @param  mixed $model
+     * @param  FormModel|null $model
      * @return void
      */
-    public function __construct(?FormModel $model = null)
+    public function __construct(private FormModel|null $model = null)
     {
-        $this->model = $model;
     }
     /**
      * begin
      *
-     * @param  mixed $action
-     * @param  mixed $method
-     * @param  mixed $options
+     * @param  string $action
+     * @param  string $method
+     * @param  array $options
      * @return string
      */
     public function begin(string $action, string $method = 'POST', array $options = []): string
     {
         $html = Html::beginForm($action, $method, $options);
         if ($this->model->isCsrfEnabled()) {
-            $csrf_token_name = config('security.csrf_token_name', 'csrf_token');
             $token = Service::session()->csrfToken($this->model->getName());
-            $html .= Html::input($csrf_token_name, 'hidden', ['value' => $token]);
+            $html .= Html::input($this->model->csrfTokenName(), 'hidden', ['value' => $token]);
         }
         return $html;
     }
@@ -62,8 +59,8 @@ class Form
     /**
      * field
      *
-     * @param  mixed $attribute
-     * @param  mixed $options
+     * @param  string $attribute
+     * @param  array $options
      * @return Input
      */
     public function field(string $attribute, array $options = []): Input
@@ -73,7 +70,7 @@ class Form
     /**
      * Generate captcha
      *
-     * @param  mixed $options
+     * @param  array $options
      * @return string
      */
     public function captcha(array $options = []): string
@@ -97,13 +94,13 @@ class Form
     /**
      * select
      *
-     * @param  mixed $attribute
-     * @param  mixed $labels
-     * @param  mixed $values
-     * @param  mixed $options
+     * @param  string $attribute
+     * @param  array $labels
+     * @param  array|null $values
+     * @param  array $options
      * @return string
      */
-    public function select(string $attribute, array $labels, ?array $values = null, array $options = []): string
+    public function select(string $attribute, array $labels, array|null $values = null, array $options = []): string
     {
         $html = Html::beginSelect($attribute, $options);
         if (empty($values))
@@ -125,8 +122,8 @@ class Form
     /**
      * textArea
      *
-     * @param  mixed $attribute
-     * @param  mixed $options
+     * @param  string $attribute
+     * @param  array $options
      * @return string
      */
     public function textArea(string $attribute, array $options = []): string
@@ -145,9 +142,9 @@ class Form
     /**
      * list
      *
-     * @param  mixed $attribute
-     * @param  mixed $data
-     * @param  mixed $options
+     * @param  string $attribute
+     * @param  array $data
+     * @param  array $options
      * @return string
      */
     public function list(string $attribute, array $data, array $options = []): string
@@ -172,9 +169,8 @@ class Form
     /**
      * file
      *
-     * @param  mixed $attribute
-     * @param  mixed $type
-     * @param  mixed $options
+     * @param  string $attribute
+     * @param  array $options
      * @return string
      */
     public function file(string $attribute, array $options = []): string

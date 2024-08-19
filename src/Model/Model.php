@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Faster\Model;
 
 use Exception;
-use Faster\Component\Enums\PrimitiveTypeEnum;
+use Faster\Component\Enums\DataTypeEnum;
 use InvalidArgumentException;
 
 /**
@@ -92,7 +92,7 @@ abstract class Model
      * @param  mixed $value
      * @return null|int
      */
-    public function filterInteger($value): ?int
+    public function filterInteger($value): int|null
     {
         return filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
     }
@@ -132,29 +132,29 @@ abstract class Model
         if ($this->hasProperty($property)) {
             $type = $this->getType($property);
             switch ($type) {
-                case PrimitiveTypeEnum::BOOL:
+                case DataTypeEnum::BOOL:
                     $this->storage[$property] = $this->filterBoolean($value);
                     break;
-                case PrimitiveTypeEnum::INT:
+                case DataTypeEnum::INT:
                     $this->storage[$property] = $this->filterInteger($value);
                     break;
-                case PrimitiveTypeEnum::FLOAT:
+                case DataTypeEnum::FLOAT:
                     $this->storage[$property] = $this->filterFloat($value);
                     break;
-                case PrimitiveTypeEnum::STRING:
+                case DataTypeEnum::STRING:
                     $this->storage[$property] = $this->filterString($value);
                     break;
-                case PrimitiveTypeEnum::ARRAY:
+                case DataTypeEnum::ARRAY:
                     $this->storage[$property] = (array)$value;
                     break;
-                case PrimitiveTypeEnum::OBJECT:
+                case DataTypeEnum::OBJECT:
                     $this->storage[$property] = (object)$value;
                     break;
-                case PrimitiveTypeEnum::RAW:
+                case DataTypeEnum::RAW:
                     $this->storage[$property] = $value;
                     break;
                 default:
-                    throw new Exception("'$type' is not supported. Available type are: " . implode(", ", PrimitiveTypeEnum::values()));
+                    throw new Exception("'$type' is not supported. Available type are: " . implode(", ", DataTypeEnum::values()));
             }
         }
     }

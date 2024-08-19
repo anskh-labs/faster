@@ -48,5 +48,12 @@ interface RouterInterface
      * @param  array $route
      * @return void
      */
-    public function addRoute(string $name, array $route);
+    public function addRoute(string $name, array $route);    
+    /**
+     * getRouteName
+     *
+     * @param  string|null $path
+     * @return string
+     */
+    public function getRouteName(string|null $path = null): string;
 }

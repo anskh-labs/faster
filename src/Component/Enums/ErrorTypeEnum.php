@@ -15,7 +15,6 @@ namespace Faster\Component\Enums;
  */
 class ErrorTypeEnum extends BaseEnum
 {
-    public const CSRF_FAILURE = '400';
     public const NOT_FOUND = '404';
     public const NOT_ALLOWED = '403';
     public const SYSTEM_ERROR  = '500';

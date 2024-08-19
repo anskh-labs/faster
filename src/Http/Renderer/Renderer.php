@@ -60,7 +60,7 @@ class Renderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function getParam(?string $key = null, $defaultValue = null)
+    public function getParam(string|null $key = null, $defaultValue = null)
     {
         if ($key) {
             return $this->params[$key] ?? $defaultValue;

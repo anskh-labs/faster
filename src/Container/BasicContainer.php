@@ -32,10 +32,10 @@ class BasicContainer
      * get
      *
      * @param  string $id
-     * @param  ?array $params
+     * @param  array|null $params
      * @return mixed
      */
-    public function get(string $id, ?array $params = null): mixed
+    public function get(string $id, array|null $params = null): mixed
     {
         if ($this->has($id)) {
             if (isset($this->container[$id])) {
@@ -56,10 +56,10 @@ class BasicContainer
      * getShared
      *
      * @param  string $id
-     * @param  ?array $params
+     * @param  array|null $params
      * @return mixed
      */
-    public function getShared(string $id, ?array $params = null): mixed
+    public function getShared(string $id, array|null $params = null): mixed
     {
         if ($this->has($id)) {
             if (!isset($this->container[$id])) {

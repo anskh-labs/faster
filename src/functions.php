@@ -35,7 +35,7 @@ if (!function_exists('config')) {
      * @param  mixed $defaultValue
      * @return mixed
      */
-    function config($offset, $defaultValue = null)
+    function config(mixed $offset, mixed $defaultValue = null): mixed
     {
         return Config::get($offset, $defaultValue);
     }
@@ -46,11 +46,11 @@ if (!function_exists('make')) {
      * make
      *
      * @param  string $id
-     * @param  ?array $params
+     * @param  array|null $params
      * @param  bool $shared
      * @return mixed
      */
-    function make(string $id, ?array $params = null, bool $shared = false)
+    function make(string $id, array|null $params = null, bool $shared = false): mixed
     {
         return Container::get($id, $params, $shared);
     }
@@ -140,7 +140,6 @@ if (!function_exists('route')) {
         }
     }
 }
-
 if (!function_exists('is_route')) {
     /**
      * is_route
@@ -148,35 +147,15 @@ if (!function_exists('is_route')) {
      * @param  array|string $name
      * @return bool
      */
-    function is_route($name): bool
+    function is_route(array|string $name): bool
     {
-        if (is_array($name)) {
-            foreach ($name as $n) {
-                if (is_route($n))
-                    return true;
-            }
-            return false;
-        } elseif (is_string($name)) {
-            if (Router::exists($name)) {
-                $route = Router::get($name);
-                $url = $route[1];
-                if ($pos = strpos($url, '[')) {
-                    $url = substr($url, 0, $pos);
-                }
-                if ($pos = strpos($url, '{')) {
-                    $url = substr($url, 0, $pos);
-                }
-                $rpath = Url::getBasePath($url);
-                $cpath = Url::getCurrentPath();
-                if ($url === $route[1])
-                    return $rpath === $cpath;
-                else
-                    return str_starts_with($cpath, $rpath);
-            }
-            return false;
-        } else {
-            return false;
+        $routes = is_string($name) ? [$name] : $name;
+        $currentRoute = Service::routeName();
+        if(!$currentRoute){
+            $currentRoute = Router::getName();
         }
+
+        return in_array($currentRoute, $routes);
     }
 }
 
@@ -237,10 +216,10 @@ if (!function_exists('db')) {
     /**
      * db
      *
-     * @param  ?string $connection
+     * @param  string|null $connection
      * @return Database
      */
-    function db(?string $connection = null): Database
+    function db(string|null $connection = null): Database
     {
         $connection = $connection ?? Db::defaultConnection();
         return Db::get($connection);
@@ -265,10 +244,10 @@ if (!function_exists('esc')) {
      *
      * @param  array|string $data
      * @param  string $context
-     * @param  ?string $encoding
+     * @param  string|null $encoding
      * @return array|string
      */
-    function esc($data, string $context = 'html', ?string $encoding = null)
+    function esc($data, string $context = 'html', string|null $encoding = null): array|string
     {
         $encoding = $encoding ?? 'utf-8';
         if (is_array($data)) {
@@ -314,10 +293,10 @@ if (!function_exists('render')) {
      *
      * @param  string $view
      * @param  array $params
-     * @param  ?ResponseInterface $response
+     * @param  ResponseInterface|null $response
      * @return ResponseInterface
      */
-    function render(string $view, array $params, ?ResponseInterface $response = null): ResponseInterface
+    function render(string $view, array $params, ResponseInterface|null $response = null): ResponseInterface
     {
         $response = $response ?? make(Response::class, null, true);
         $response->getBody()->write(View::renderer()->render($view, $params));
@@ -375,5 +354,55 @@ if (!function_exists('form')) {
     function form(FormModel $model): Form
     {
         return new Form($model);
+    }
+}
+if (!function_exists('local_time')) {
+    /**
+     * local_time
+     *
+     * @param  int|null $time
+     * @param  string $timezone
+     * @return int
+     */
+    function local_time(int|null $time = null, string $timezone = "Asia/Jakarta"): int
+    {
+        static $timeOffset = null;
+        if (!$timeOffset) {
+            $dateTimeZone = new DateTimeZone($timezone);
+            $dateTime = new DateTime("now", $dateTimeZone);
+            $timeOffset = $dateTimeZone->getOffset($dateTime);
+        }
+        $time = $time ?? time();
+
+        return $time + $timeOffset;
+    }
+}
+if (!function_exists('array_encode')) {
+    /**
+     * array_encode
+     *
+     * @param  array $data
+     * @return string
+     */
+    function array_encode(array $data): string
+    {
+        return base64_encode(serialize($data));
+    }
+}
+if (!function_exists('array_decode')) {
+    /**
+     * array_decode
+     *
+     * @param  string $data
+     * @return array
+     */
+    function array_decode(string $data): array
+    {
+        $decode = unserialize(base64_decode($data));
+        if (is_array($decode)) {
+            return $decode;
+        } else {
+            return [];
+        }
     }
 }

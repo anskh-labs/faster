@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Faster\Component\Enums;
 
 /**
- * PrimitiveTypeEnum
+ * DataTypeEnum
  * -----------
  * used in Model
  *
@@ -13,7 +13,7 @@ namespace Faster\Component\Enums;
  * @since 1.0.0
  * @package Faster\Component\Enums
  */
-class PrimitiveTypeEnum extends BaseEnum
+class DataTypeEnum extends BaseEnum
 {
     public const BOOL = 'boolean';
     public const INT = 'integer';

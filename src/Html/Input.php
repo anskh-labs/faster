@@ -28,24 +28,18 @@ class Input
     const TYPE_HIDDEN = 'hidden';
 
     public string $type;
-    public FormModel $model;
-    public string $attribute;
-    public array $options;
 
     /**
      * __construct
      *
-     * @param  mixed $model
-     * @param  mixed $attribute
-     * @param  mixed $options
+     * @param  FormModel $model
+     * @param  string $attribute
+     * @param  array $options
      * @return void
      */
-    public function __construct(FormModel $model, string $attribute, array $options = [])
+    public function __construct(private FormModel $model, private string $attribute, private array $options = [])
     {
-        $this->model = $model;
         $this->type = self::TYPE_TEXT;
-        $this->attribute = $attribute;
-        $this->options = $options;
     }
 
     /**

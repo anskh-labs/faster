@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Faster\Model;
 
-use Faster\Component\Enums\PrimitiveTypeEnum;
+use Faster\Component\Enums\DataTypeEnum;
 use Faster\Db\Database;
 use Faster\Html\Pagination;
 use PDO;
@@ -32,10 +32,10 @@ abstract class DbModel extends Model
     /**
      * __construct
      *
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return void
      */
-    public function __construct(?Database $db = null)
+    public function __construct(Database|null $db = null)
     {
         $this->db = $db ?? db();
         if (!isset($this->table)) {
@@ -84,7 +84,7 @@ abstract class DbModel extends Model
      * @param  mixed $defaultValue
      * @return void
      */
-    public function addProperty(string $property, string $type = PrimitiveTypeEnum::STRING, $defaultValue = null): void
+    public function addProperty(string $property, string $type = DataTypeEnum::STRING, $defaultValue = null): void
     {
         $this->fields[] = $property;
         $this->types[$property] = $type;
@@ -135,7 +135,7 @@ abstract class DbModel extends Model
      * @param  array|string|null $where
      * @return int
      */
-    public function getRecordCount($where = null): int
+    public function getRecordCount(array|string|null $where = null): int
     {
         return $this->db->getRecordCount($this->table, $where);
     }
@@ -145,7 +145,7 @@ abstract class DbModel extends Model
      * @param  array|string|null $where
      * @return bool
      */
-    public function isExists($where = null): bool
+    public function isExists(array|string|null $where = null): bool
     {
         return $this->db->recordExists($this->table, $where);
     }
@@ -161,7 +161,7 @@ abstract class DbModel extends Model
         for ($i = 0; $i < $columnCount; $i++) {
             $col = $stmt->getColumnMeta($i);
             $this->fields[] = $col['name'];
-            $type =  PrimitiveTypeEnum::hasValue($col['native_type']) ? $col['native_type'] : PrimitiveTypeEnum::defaultType();
+            $type =  DataTypeEnum::hasValue($col['native_type']) ? $col['native_type'] : DataTypeEnum::defaultType();
             $this->addProperty($col['name'], $type);
         }
 
@@ -174,12 +174,13 @@ abstract class DbModel extends Model
     /**
      * table
      *
+     * @param  Database|null $db
      * @return string
      */
-    public static function table(): string
+    public static function table(Database|null $db = null): string
     {
         $arr = explode('\\', static::class);
-        return strtolower(end($arr));
+        return static::db($db)->getTable(strtolower(end($arr)));
     }
     /**
      * primaryKey
@@ -193,10 +194,10 @@ abstract class DbModel extends Model
     /**
      * Get db
      *
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return Database
      */
-    public static function db(?Database $db = null): Database
+    public static function db(Database|null $db = null): Database
     {
         return $db ?? db();
     }
@@ -204,10 +205,10 @@ abstract class DbModel extends Model
      * create
      *
      * @param  array $data
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return int
      */
-    public static function create(array $data, ?Database $db = null): int
+    public static function create(array $data, Database|null $db = null): int
     {
         return static::db($db)->insert($data, static::table());
     }
@@ -216,10 +217,10 @@ abstract class DbModel extends Model
      *
      * @param  array $data
      * @param  array|string|null  $where
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return int
      */
-    public static function update(array $data, $where = null, ?Database $db = null): int
+    public static function update(array $data, array|string|null $where = null, Database|null $db = null): int
     {
         return static::db($db)->update($data, static::table(), $where);
     }
@@ -227,10 +228,10 @@ abstract class DbModel extends Model
      * delete
      *
      * @param  array|string|null  $where
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return int
      */
-    public static function delete($where = null, ?Database $db = null): int
+    public static function delete(array|string|null $where = null, Database|null $db = null): int
     {
         return static::db($db)->delete(static::table(), $where);
     }
@@ -238,39 +239,35 @@ abstract class DbModel extends Model
      * all
      *
      * @param  string $column
-     * @param  int $limit
-     * @param  unt $offset
-     * @param  ?string $orderby
-     * @param  ?Database $db
+     * @param  string|null $orderby
+     * @param  Database|null $db
      * @return array
      */
-    public static function all(string $column = '*', int $limit = 0, int $offset = -1, ?string $orderby = null, ?Database $db = null): array
+    public static function all(string $column = '*', string|null $orderby = null, Database|null $db = null): array
     {
-        return static::db($db)->select(static::table(), $column, null, $limit, $offset, $orderby);
+        return static::db($db)->select(static::table(), $column, null, 0, -1, $orderby);
     }
     /**
      * allColumn
      *
      * @param  string $column
-     * @param  int $limit
-     * @param  int $offset
-     * @param  ?string $orderby
-     * @param  ?Database $db $db
+     * @param  string|null $orderby
+     * @param  Database|null $db $db
      * @return array
      */
-    public static function allColumn(string $column, int $limit = 0, int $offset = -1, ?string $orderby = null, ?Database $db = null): array
+    public static function allColumn(string $column, string|null $orderby = null, Database|null $db = null): array
     {
-        return static::db($db)->select(static::table(), $column, null, $limit, $offset, $orderby, PDO::FETCH_COLUMN);
+        return static::db($db)->select(static::table(), $column, null, 0, -1, $orderby, PDO::FETCH_COLUMN);
     }
     /**
      * row
      *
      * @param  string $column
      * @param  array|string|null  $where
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return array
      */
-    public static function row(string $column = '*', $where = null, ?Database $db = null): array
+    public static function row(string $column = '*', array|string|null $where = null, Database|null $db = null): array
     {
         return static::db($db)->getRow(static::table(), $column, $where);
     }
@@ -278,10 +275,10 @@ abstract class DbModel extends Model
      * recordCount
      *
      * @param  array|string|null $where
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return int
      */
-    public static function recordCount($where = null, ?Database $db = null): int
+    public static function recordCount(array|string|null $where = null, Database|null $db = null): int
     {
         return static::db($db)->getRecordCount(static::table(), $where);
     }
@@ -291,11 +288,11 @@ abstract class DbModel extends Model
      * @param  array|string|null $where
      * @param  string $column
      * @param  int $limit
-     * @param  ?string $orderby
-     * @param  ?Database $db
+     * @param  string|null $orderby
+     * @param  Database|null $db
      * @return array
      */
-    public static function find($where = null, string $column = '*', int $limit = 0, int $offset = -1, ?string $orderby = null, ?Database $db = null): array
+    public static function find(array|string|null $where = null, string $column = '*', int $limit = 0, int $offset = -1, string|null $orderby = null, Database|null $db = null): array
     {
         return static::db($db)->select(static::table(), $column, $where, $limit, $offset, $orderby);
     }
@@ -304,12 +301,12 @@ abstract class DbModel extends Model
      *
      * @param  array|string|null $where
      * @param  string $column
-     * @param  ?int $perpage
-     * @param  ?string $orderby
-     * @param  ?Database $db
+     * @param  int|null $perpage
+     * @param  string|null $orderby
+     * @param  Database|null $db
      * @return DbRecordSet
      */
-    public static function paginate($where = null, string $column = '*', ?int $perpage = null, ?string $orderby = null, ?Database $db = null): DbRecordSet
+    public static function paginate(array|string|null $where = null, string $column = '*', int|null $perpage = null, string|null $orderby = null, Database|null $db = null): DbRecordSet
     {
         $pager = new Pagination(static::recordCount($where), $perpage);
         $rows = static::db($db)->select(static::table(), $column, $where, $pager->perPage(), $pager->offset(), $orderby);
@@ -322,22 +319,34 @@ abstract class DbModel extends Model
      * @param  array|string|null  $where
      * @param  int $limit
      * @param  int $offset
-     * @param  ?string $orderby
-     * @param  ?Database $db
+     * @param  string|null $orderby
+     * @param  Database|null $db
      * @return array
      */
-    public static function findColumn(string $column, $where = null, int $limit = 0, int $offset = -1, ?string $orderby = null, ?Database $db = null): array
+    public static function findColumn(string $column, array|string|null $where = null, int $limit = 0, int $offset = -1, string|null $orderby = null, Database|null $db = null): array
     {
         return static::db($db)->select(static::table(), $column, $where, $limit, $offset, $orderby, PDO::FETCH_COLUMN);
+    }
+    /**
+     * column
+     *
+     * @param  string $column
+     * @param  array|string|null  $where
+     * @param  Database|null $db
+     * @return mixed
+     */
+    public static function column(string $column, array|string|null $where = null, Database|null $db = null): mixed
+    {
+        return static::db($db)->getColumn(static::table(), $column, $where);
     }
     /**
      * exists
      *
      * @param  array|string|null $where
-     * @param  ?Database $db
+     * @param  Database|null $db
      * @return bool
      */
-    public static function exists($where = null, ?Database $db = null): bool
+    public static function exists(array|string|null $where = null, Database|null $db = null): bool
     {
         return static::db($db)->recordExists(static::table(), $where);
     }

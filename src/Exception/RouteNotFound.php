@@ -15,15 +15,13 @@ use Exception;
  */
 class RouteNotFound extends Exception
 {
-    protected string $route;
-    
     /**
      * __construct
      *
      * @param  string $route
      * @return void
      */
-    public function __construct(string $route)
+    public function __construct(private string $route)
     {
         $this->route = $route;
         parent::__construct("Route '" . $route . "' can not be found!");

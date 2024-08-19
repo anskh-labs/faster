@@ -24,11 +24,11 @@ Interface RendererInterface
     /**
      * getParam
      *
-     * @param  ?string $key
+     * @param  string|null $key
      * @param  mixed $defaultValue
      * @return mixed
      */
-    public function getParam(?string $key = null, $defaultValue = null);
+    public function getParam(string|null $key = null, $defaultValue = null);
     /**
      * setParam
      *

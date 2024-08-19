@@ -15,12 +15,6 @@ namespace Faster\Http\Auth;
  */
 class UserIdentity implements UserIdentityInterface
 {
-    /** @var string|int|null */
-    protected $id;
-    protected array $roles;
-    protected array $permissions;
-    protected array $data;
-
     /**
      * __construct
      *
@@ -30,17 +24,13 @@ class UserIdentity implements UserIdentityInterface
      * @param  array $data
      * @return void
      */
-    public function __construct($id = null, array $roles = [], array $permissions = [], array $data = [])
+    public function __construct(private string|int|null $id = null, private array $roles = [], private array $permissions = [], private array $data = [])
     {
-        $this->id = $id;
-        $this->roles = $roles;
-        $this->permissions = $permissions;
-        $this->data = $data;
     }
     /**
      * @inheritdoc
      */
-    public function getId()
+    public function getId(): string|int|null
     {
         return $this->id;
     }

@@ -14,18 +14,15 @@ use Exception;
  * @package Faster\Exception
  */
 class MethodNotAllowed extends Exception
-{
-    protected string $method;
-    
+{    
     /**
      * __construct
      *
      * @param  string $method
      * @return void
      */
-    public function __construct(string $method)
+    public function __construct(private string $method)
     {
-        $this->method = $method;
         parent::__construct("Method '" . $method . "' is not allowed!");
     }
     

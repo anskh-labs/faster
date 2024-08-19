@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Faster\Helper;
 
+use Faster\Component\Enums\HttpMethodEnum;
 use Faster\Http\Auth\UserPrincipalInterface;
 use Faster\Http\Session\SessionInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -49,6 +49,26 @@ class Service
         }
 
         throw new \Exception("User which implements UserPrincipalInterface not found.");
+    }    
+    /**
+     * routeName
+     *
+     * @param  string $routeAttribute
+     * @return string
+     */
+    public static function routeName(string $routeAttribute = '__route'): string
+    {
+        return App::request()->getAttribute($routeAttribute, '');
+    }
+    /**
+     * actionName
+     *
+     * @param  string $actionAttribute
+     * @return string
+     */
+    public static function actionName(string $actionAttribute = '__action'): string
+    {
+        return App::request()->getAttribute($actionAttribute, '');
     }
     /**
      * sanitize
@@ -57,13 +77,13 @@ class Service
      * @param  string|array $except
      * @return array
      */
-    public static function sanitize(ServerRequestInterface $request, $except = ''): array
+    public static function sanitize(ServerRequestInterface $request, string|array $except = ''): array
     {
         $data = [];
         if (is_string($except) && $except) {
             $except = [$except];
         }
-        if ($request->getMethod() === 'POST') {
+        if ($request->getMethod() === HttpMethodEnum::POST) {
             foreach ($request->getParsedBody() as $key => $value) {
                 if ($except && in_array($key, $except)) {
                     $data[$key] = $value;
@@ -79,7 +99,7 @@ class Service
                     }
                 }
             }
-        } elseif ($request->getMethod() === 'GET') {
+        } elseif ($request->getMethod() === HttpMethodEnum::GET) {
             foreach ($request->getQueryParams() as $key => $value) {
                 if ($except && in_array($key, $except)) {
                     $data[$key] = $value;

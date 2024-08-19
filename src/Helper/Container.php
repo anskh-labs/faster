@@ -21,10 +21,10 @@ class Container
      * get
      *
      * @param  string $id
-     * @param  ?array $options
+     * @param  array|null $options
      * @return void
      */
-    public static function get(string $id, ?array $params = null, bool $shared = false)
+    public static function get(string $id, array|null $params = null, bool $shared = false)
     {
         if ($shared) {
             return BasicContainer::getInstance()->getShared($id, $params);

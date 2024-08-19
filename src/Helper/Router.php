@@ -48,5 +48,15 @@ class Router
     public static function exists(string $name): bool
     {
         return SimpleRouter::getInstance(static::$route)->routeExists($name);
+    } 
+    /**
+     * get route name based on url path
+     *
+     * @param  string|null $path
+     * @return string
+     */
+    public static function getName(string|null $path = null): string
+    {
+        return SimpleRouter::getInstance(static::$route)->getRouteName($path);
     }
 }

@@ -25,31 +25,27 @@ class SessionMiddleware implements MiddlewareInterface
     /**
      * @var string|null
      */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @var string|null
      */
-    private ?string $id = null;
+    private string|null $id = null;
 
     /**
      * @var array|null
      */
-    private ?array $options = null;
+    private array|null $options = null;
 
     /**
      * @var int|null
      */
-    private ?int $regenerateIdInterval = null;
+    private int|null $regenerateIdInterval = null;
 
     /**
      * @var string|null
      */
-    private ?string $sessionIdExpiryKey = null;
-    /**
-     * @var string
-     */
-    private string $sessionAttribute;
+    private string|null $sessionIdExpiryKey = null;
 
     /**
      * __construct
@@ -57,9 +53,8 @@ class SessionMiddleware implements MiddlewareInterface
      * @param  string $sessionAttribute
      * @return void
      */
-    public function __construct(string $sessionAttribute = '__session')
+    public function __construct(private string $sessionAttribute = '__session')
     {
-        $this->sessionAttribute = $sessionAttribute;
     }
     /**
      * Configure session name

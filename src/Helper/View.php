@@ -28,11 +28,21 @@ class View
     { 
         $path = $path ?? static::defaultViewPath();
         return Renderer::getInstance($path);
-    }
+    }    
+    /**
+     * defaultViewPath
+     *
+     * @return string
+     */
     public static function defaultViewPath(): string
     {
         return config('app.view.path');
-    }
+    }    
+    /**
+     * defaultViewExtension
+     *
+     * @return string
+     */
     public static function defaultViewExtension(): string
     {
         return config('app.view.extension');

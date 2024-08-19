@@ -33,12 +33,18 @@ interface UserPrincipalInterface
      * @param  string|array $role
      * @return bool
      */
-    public function hasRole($role): bool;
+    public function hasRole(string|array $role): bool;
     /**
      * hasPermission
      *
      * @param  string|array $permission
      * @return bool
      */
-    public function hasPermission($permission): bool;
+    public function hasPermission(string|array $permission): bool;    
+    /**
+     * isGuest
+     *
+     * @return bool
+     */
+    public function isGuest(): bool;
 }

@@ -24,7 +24,7 @@ class Database
     use MultitonTrait;
 
     private PDO $pdo;
-    private ?string $prefix;
+    private string|null $prefix;
     private string $type;
 
     /**
@@ -56,7 +56,7 @@ class Database
      * @param  string $sql
      * @return int|false
      */
-    public function exec(string $sql)
+    public function exec(string $sql): int|false
     {
         return $this->pdo->exec($sql);
     }
@@ -66,7 +66,7 @@ class Database
      * @param  string $sql
      * @return PDOStatement|false
      */
-    public function query(string $sql)
+    public function query(string $sql): PDOStatement|false
     {
         return $this->pdo->query($sql);
     }
@@ -140,7 +140,7 @@ class Database
      * @param  array|string|null $where
      * @return int
      */
-    public function update(array $data, string $table, $where = null): int
+    public function update(array $data, string $table, array|string|null $where = null): int
     {
         $affectedRows = 0;
 
@@ -220,11 +220,11 @@ class Database
      * @param  array|string|null $where
      * @param  int $limit
      * @param  int $offset
-     * @param  ?string $orderby
+     * @param  string|null $orderby
      * @param  int $fetch
      * @return array
      */
-    public function select(string $table, string $column = '*', $where = null, int $limit = 0, int $offset = -1, ?string $orderby = null, int $fetch = PDO::FETCH_ASSOC): array
+    public function select(string $table, string $column = '*', array|string|null $where = null, int $limit = 0, int $offset = -1, string|null $orderby = null, int $fetch = PDO::FETCH_ASSOC): array
     {
         $sql = "SELECT $column FROM $table";
         $criteria = is_array($where) ? QueryHelper::parseWhere($where) : $where ?? '';
@@ -268,9 +268,36 @@ class Database
      * @param  array|string|null $where
      * @return array
      */
-    public function getRow(string $table, string $column = '*', $where = null): array
+    public function getRow(string $table, string $column = '*', array|string|null $where = null): array
     {
         return $this->select($table, $column, $where, 1);
+    }
+    /**
+     * getColumn
+     *
+     * @param  string $table
+     * @param  string $column
+     * @param  array|string|null $where
+     * @return mixed
+     */
+    public function getColumn(string $table, string $column, array|string|null $where = null): mixed
+    {
+        $sql = "SELECT $column FROM $table";
+        $criteria = is_array($where) ? QueryHelper::parseWhere($where) : $where ?? '';
+        if ($criteria) {
+            $criteria = ' WHERE ' . $criteria;
+        }
+        $sql .= $criteria;
+
+        $stmt = $this->pdo->prepare($sql . ";");
+        if (is_array($where)) {
+            $values = QueryHelper::parseParams($where);
+            $stmt->execute($values);
+        } else {
+            $stmt->execute();
+        }
+        
+        return $stmt->fetchColumn();
     }
     /**
      * getRecordCount
@@ -363,11 +390,11 @@ class Database
      * @param  array $columns
      * @param  array $primary
      * @param  array $unique
-     * @param  ?string $attribute
+     * @param  string|null $attribute
      * @param  bool $checkExist
      * @return bool
      */
-    public function create(string $table, array $columns, array $primary = [], array $unique = [], ?string $attribute = null, bool $checkExist = false): bool
+    public function create(string $table, array $columns, array $primary = [], array $unique = [], string|null $attribute = null, bool $checkExist = false): bool
     {
         $sql = "CREATE TABLE ";
         if ($checkExist) {
@@ -404,10 +431,10 @@ class Database
      * @param  array $columns
      * @param  array $primary
      * @param  array $unique
-     * @param  ?string $attribute
+     * @param  string|null $attribute
      * @return bool
      */
-    public function createIfNotExist(string $table, array $columns, array $primary = [], array $unique = [], ?string $attribute = null): bool
+    public function createIfNotExist(string $table, array $columns, array $primary = [], array $unique = [], string|null $attribute = null): bool
     {
         return $this->create($table, $columns, $primary, $unique, $attribute, true);
     }

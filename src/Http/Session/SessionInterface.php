@@ -35,10 +35,10 @@ interface SessionInterface
      * validateCsrfToken
      *
      * @param  string $name
-     * @param  ?string $token
+     * @param  string|null $token
      * @return bool
      */
-    public function validateCsrfToken(string $name, ?string $token): bool;    
+    public function validateCsrfToken(string $name, string|null $token): bool;    
     /**
      * captcha
      *
@@ -51,34 +51,34 @@ interface SessionInterface
     /**
      * get
      *
-     * @param  ?string $property
+     * @param  string|null $property
      * @param  mixed $defaultValue
      * @return mixed
      */
-    public function get(?string $property = null, $defaultValue = null);
+    public function get(string|null $property = null, $defaultValue = null);
     /**
      * validateCaptcha
      *
      * @param  string $formName
-     * @param  ?string $captcha
+     * @param  string|null $captcha
      * @return bool
      */
-    public function validateCaptcha(string $formName, ?string $captcha): bool;
+    public function validateCaptcha(string $formName, string|null $captcha): bool;
     /**
      * has
      *
-     * @param  ?string $property
+     * @param  string|null $property
      * @return bool
      */
-    public function has(?string $property = null): bool;
+    public function has(string|null $property = null): bool;
 
     /**
      * unset
      *
-     * @param  ?string $property
+     * @param  string|null $property
      * @return mixed
      */
-    public function unset(?string $property = null);
+    public function unset(string|null $property = null);
 
     /**
      * addFlashInfo
@@ -91,9 +91,9 @@ interface SessionInterface
     /**
      * flashInfo
      *
-     * @return ?FlashMessage
+     * @return FlashMessage|null
      */
-    public function flashInfo(): ?FlashMessage;
+    public function flashInfo(): FlashMessage|null;
     /**
      * addFlashError
      *
@@ -104,9 +104,9 @@ interface SessionInterface
     /**
      * flashError
      *
-     * @return ?FlashMessage
+     * @return FlashMessage|null
      */
-    public function flashError(): ?FlashMessage;
+    public function flashError(): FlashMessage|null;
     /**
      * addFlashWarning
      *
@@ -117,9 +117,9 @@ interface SessionInterface
     /**
      * flashWarning
      *
-     * @return ?FlashMessage
+     * @return FlashMessage|null
      */
-    public function flashWarning(): ?FlashMessage;
+    public function flashWarning(): FlashMessage|null;
     /**
      * addFlashSuccess
      *
@@ -130,9 +130,9 @@ interface SessionInterface
     /**
      * flashSuccess
      *
-     * @return ?FlashMessage
+     * @return FlashMessage|null
      */
-    public function flashSuccess(): ?FlashMessage;
+    public function flashSuccess(): FlashMessage|null;
 
     /**
      * addFlash
@@ -146,18 +146,18 @@ interface SessionInterface
     /**
      * flash
      *
-     * @param  ?string $type
+     * @param  string|null $type
      * @return FlashMessage|array|null
      */
-    public function flash(?string $type = null);
+    public function flash(string|null $type = null);
 
     /**
      * hasFlash
      *
-     * @param  ?string $type
+     * @param  string|null $type
      * @return bool
      */
-    public function hasFlash(?string $type = null): bool;
+    public function hasFlash(string|null $type = null): bool;
 
     /**
      * hasFlashSuccess

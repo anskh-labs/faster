@@ -20,10 +20,10 @@ final class QueryHelper
     /**
      * parseWhere
      *
-     * @param  ?array $where
+     * @param  array|null $where
      * @return string
      */
-    public static  function parseWhere(?array $where = null): string
+    public static  function parseWhere(array|null $where = null): string
     {
         $string_where = '';
         if ($where) {

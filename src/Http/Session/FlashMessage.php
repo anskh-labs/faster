@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Faster\Http\Session;
 
+use Faster\Component\Enums\FlashMessageEnum;
+
 /**
  * FlashMessage
  * -----------
@@ -15,11 +17,6 @@ namespace Faster\Http\Session;
  */
 class FlashMessage
 {
-    const ERROR = 'danger';
-    const WARNING = 'warning';
-    const INFO = 'info';
-    const SUCCESS = 'success';
-
     private string $type;
     private array $messages;
     
@@ -30,9 +27,9 @@ class FlashMessage
      * @param  array $messages
      * @return void
      */
-    public function __construct(string $type = self::INFO, array $messages = [])
+    public function __construct(string $type, array $messages = [])
     {
-        $this->type = in_array($type, [self::ERROR, self::WARNING, self::INFO, self::SUCCESS]) ? $type: self::INFO;
+        $this->type = FlashMessageEnum::hasValue($type) ? $type : FlashMessageEnum::defaultType();
         $this->messages = $messages;        
     }
 

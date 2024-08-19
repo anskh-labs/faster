@@ -20,7 +20,7 @@ use InvalidArgumentException;
  */
 class Config
 {
-    private static ?string $path = null;
+    private static string|null $path = null;
     /**
      * init
      *

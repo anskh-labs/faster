@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Faster\Http\Middleware;
 
-use Faster\Helper\Service;
-use Faster\Http\Auth\AuthModelInterface;
 use Faster\Http\Auth\AuthProviderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,76 +23,62 @@ use Faster\Http\Auth\UserPrincipalInterface;
  * @package Faster\Http\Middleware
  */
 class AuthMiddleware implements MiddlewareInterface
-{
-    private AuthProviderInterface $authProvider;
-    private AuthModelInterface $authModel;
-    private string $userAttribute;
-    private string $userIdAttribute = '__user_id';
-    private string $userHashAttribute = '__user_hash';
-     
+{     
+    public const USERID = 'userid';
+    public const ROLES = 'roles';
+    public const PERMISSIONS = 'permissions';
+    public const DATA = 'data';
+
     /**
      * __construct
      *
      * @param  AuthProviderInterface $authProvider
-     * @param  AuthModelInterface $userModel
+     * @param  string $sessionAttribute
      * @param  string $userAttribute
      * @return void
      */
-    public function __construct(AuthProviderInterface $authProvider, AuthModelInterface $authModel, string $userAttribute = '__user')
+    public function __construct(private AuthProviderInterface $authProvider, private string $sessionAttribute = '__session', private string $userAttribute = '__user')
     {
-        $this->authProvider = $authProvider;
-        $this->authModel = $authModel;
-        $this->userAttribute = $userAttribute;
     }
     
     /**
      * process
      *
-     * @param  mixed $request
-     * @param  mixed $handler
+     * @param  ServerRequestInterface $request
+     * @param  RequestHandlerInterface $handler
      * @return ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $userId = Service::session()->get($this->userIdAttribute);
-        $userHash = Service::session()->get($this->userHashAttribute);
-        $user = $this->validateUser($userId, $userHash);
+        $user = $this->validateUser($request);        
         $request = $request->withAttribute($this->userAttribute, $user);
 
         return $handler->handle($request);
-    }
-    
+    }      
     /**
      * validateUser
      *
-     * @param  string|int|null $userId
-     * @param  ?string $userHash
+     * @param  ServerRequestInterface $request
      * @return UserPrincipalInterface
      */
-    public function validateUser($userId = null, ?string $userHash = null): UserPrincipalInterface
+    private function validateUser(ServerRequestInterface $request): UserPrincipalInterface
     {
+        $session = $request->getAttribute($this->sessionAttribute);
+        $userId = $session->get($this->authProvider->getUserIdAttribute());
+        $userHash = $session->get($this->authProvider->getUserHashAttribute());
         if ($userId !== null && $userHash !== null) {
-            $user = $this->authModel->getUser($userId);
-            if ($user) {
-                if ($this->authModel->validateHash($user, $userHash)) {
-                    $roles = $this->authModel->getRoles($user);
-                    $permissions = [];
-                    if ($roles) {
-                        $rolePermissions = $this->authProvider->getPermissions();
-                        if($rolePermissions){
-                            foreach ($roles as $role){
-                                $permissions = array_merge($permissions, $rolePermissions[$role]);
-                            }
-                        }
-                        
-                    }
-                    return new UserPrincipal($this->authProvider, new UserIdentity($userId, $roles, $permissions, $user));
-                }
+            $userData = array_decode($userHash);
+            if(empty($userData) || $userId != $userData[self::USERID]){
+                $session->unset($this->authProvider->getUserIdAttribute());
+                $session->unset($this->authProvider->getUserHashAttribute());
+            }else{
+                $roles = $userData[self::ROLES] ?? [];
+                $permissions = $userData[self::PERMISSIONS] ?? [];
+                $data = $userData[self::DATA] ?? [];
+                
+                return new UserPrincipal($this->authProvider, new UserIdentity($userId, $roles, $permissions, $data));
             }
-            Service::session()->unset($this->userIdAttribute);
-            Service::session()->unset($this->userHashAttribute);
         }
-
         return new UserPrincipal($this->authProvider);
     }
 }

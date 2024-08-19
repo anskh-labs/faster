@@ -38,7 +38,13 @@ interface DbPaginationInterface
      *
      * @return int
      */
-    public function currentPage(): int;    
+    public function currentPage(): int;   
+    /**
+     * currentRecordCount
+     *
+     * @return int
+     */
+    public function currentRecordCount(): int;
     /**
      * offset
      *

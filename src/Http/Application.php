@@ -14,6 +14,7 @@ use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * Application
@@ -28,10 +29,10 @@ class Application
 {
     use MultitonTrait;
 
-    private ?EmitterInterface $emitter = null;
-    private ?ServerRequestInterface $request = null;
-    private ?HttpRequestHandlerInterface $requestHandler = null;
-    private ?ResponseInterface $response = null;
+    private EmitterInterface|null $emitter = null;
+    private ServerRequestInterface|null $request = null;
+    private HttpRequestHandlerInterface|null $requestHandler = null;
+    private ResponseInterface|null $response = null;
 
 
     /**

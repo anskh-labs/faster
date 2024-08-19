@@ -60,7 +60,7 @@ class HttpRequestHandler implements HttpRequestHandlerInterface
     /**
      * @inheritdoc
      */
-    public function addMiddleware(MiddlewareInterface $middleware, ?string $id = null): self
+    public function addMiddleware(MiddlewareInterface $middleware, string|null $id = null): self
     {
         $this->middleware[] = [
             "id" => $id ?? get_class($middleware),

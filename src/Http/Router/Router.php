@@ -25,7 +25,7 @@ class Router implements RouterInterface
     use MultitonTrait;
 
     private array $routes = [];
-            
+
     /**
      * __construct
      *
@@ -36,7 +36,7 @@ class Router implements RouterInterface
     {
         $routes = config($route);
         $this->validate($routes);
-    }    
+    }
     final function __clone()
     {
     }
@@ -52,20 +52,20 @@ class Router implements RouterInterface
      */
     private function validate(array $routes)
     {
-        foreach($routes as $name => $route){
-            if(!is_string($name)){
+        foreach ($routes as $name => $route) {
+            if (!is_string($name)) {
                 throw new \Exception("Route name must be string.");
-            }elseif(array_key_exists($name, $this->routes)){
+            } elseif (array_key_exists($name, $this->routes)) {
                 throw new \Exception("Route with name '$name' is exist.");
             }
             list($method, $path, $handler) = $route;
-            if(!is_string($method) && !is_array($method)){
+            if (!is_string($method) && !is_array($method)) {
                 throw new \Exception("Http method must be string or array.");
             }
-            if(!is_string($path)){
-                throw new \Exception("Route path must be string.");                
+            if (!is_string($path)) {
+                throw new \Exception("Route path must be string.");
             }
-            if(!is_string($handler) && !is_array($handler) && !is_callable($handler)){
+            if (!is_string($handler) && !is_array($handler) && !is_callable($handler)) {
                 throw new \Exception("Route handler must be string, array, or callable.");
             }
             $this->routes[$name] = [$method, $path, $handler];
@@ -78,14 +78,14 @@ class Router implements RouterInterface
     {
         $basePath = Url::getBasePath();
         $routes = array_values($this->routes);
-        return simpleDispatcher(function (RouteCollector $r) use($routes, $basePath) {
+        return simpleDispatcher(function (RouteCollector $r) use ($routes, $basePath) {
             foreach ($routes as $route) {
                 list($method, $path, $handler) = $route;
                 $path = $basePath . $path;
                 $r->addRoute($method, $path, $handler);
             }
         });
-    }    
+    }
     /**
      * @inheritdoc
      */
@@ -112,9 +112,41 @@ class Router implements RouterInterface
      */
     public function addRoute(string $name, array $route)
     {
-        if($this->routeExists($name)){
+        if ($this->routeExists($name)) {
             throw new \Exception("Route '$name' is already exists.");
         }
         $this->routes[$name] = $route;
+    }
+    /**
+     * @inheritdoc
+     */
+    public function getRouteName(string|null $path = null): string
+    {
+        if ($path === null) {
+            $path = current_path();
+        }
+        foreach ($this->routes as $name => $route) {
+            $url = $route[1];
+            if ($pos = strpos($url, '[')) {
+                $url = substr($url, 0, $pos);
+            }
+            if ($pos = strpos($url, '{')) {
+                $url = substr($url, 0, $pos);
+            }
+            $rpath = Url::getBasePath($url);
+            if ($url === $route[1]){
+                if($rpath === $path){
+                    return $name;
+                }
+            }                
+            else
+            {
+                if(str_starts_with($path, $rpath)){
+                    return $name;
+                }
+            }
+        }
+        
+        return '';
     }
 }

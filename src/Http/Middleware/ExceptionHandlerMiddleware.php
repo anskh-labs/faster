@@ -26,8 +26,6 @@ use Throwable;
 class ExceptionHandlerMiddleware implements MiddlewareInterface
 {
     /** @var callable */
-    private $csrfFailure;
-    /** @var callable */
     private $notfound;
     /** @var callable */
     private $notAllowed;
@@ -44,9 +42,6 @@ class ExceptionHandlerMiddleware implements MiddlewareInterface
      */
     public function __construct(array $config, ResponseInterface $response)
     {
-        if (isset($config[ErrorTypeEnum::CSRF_FAILURE]) && is_callable($config[ErrorTypeEnum::CSRF_FAILURE])) {
-            $this->csrfFailure = $config[ErrorTypeEnum::CSRF_FAILURE];
-        }
         if (isset($config[ErrorTypeEnum::NOT_FOUND]) && is_callable($config[ErrorTypeEnum::NOT_FOUND])) {
             $this->notfound = $config[ErrorTypeEnum::NOT_FOUND];
         }
@@ -65,8 +60,6 @@ class ExceptionHandlerMiddleware implements MiddlewareInterface
     {
         try {
             return $handler->handle($request);
-        }catch (CsrfFailure $e) {
-            return $this->handleCsrfFailure($e);
         } catch (RouteNotFound $e) {
             return $this->handleNotFound($e);
         } catch (MethodNotAllowed $e) {
@@ -74,21 +67,6 @@ class ExceptionHandlerMiddleware implements MiddlewareInterface
         } catch (Throwable $exception) {
             return $this->handleThrowable($exception);
         }
-    }
-    
-    /**
-     * handleCsrfFailure
-     *
-     * @param  CsrfFailure $e
-     * @return ResponseInterface
-     */
-    private function handleCsrfFailure(CsrfFailure $e): ResponseInterface
-    {
-        if(is_callable($this->csrfFailure)){
-            return ($this->csrfFailure)($e, $this->response);
-        }
-
-        return $this->handleException($e->getMessage(), 400);
     }
 
     /**

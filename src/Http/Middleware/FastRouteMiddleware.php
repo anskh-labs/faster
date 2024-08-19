@@ -24,20 +24,16 @@ use Faster\Http\Router\RouterInterface;
  */
 class FastRouteMiddleware implements MiddlewareInterface
 {
-    private string $actionAttribute;
-    private RouterInterface $router;
-
     /**
      * __construct
      *
      * @param  \Faster\Http\Router\RouterInterface $router
-     * @param  array $router
+     * @param  string $actionAttribute
+     * @param  string $routeAttribute
      * @return void
      */
-    public function __construct(RouterInterface $router, string $actionAttribute = '__action')
+    public function __construct(private RouterInterface $router, private string $actionAttribute = '__action', private string $routeAttribute = '__route')
     {
-        $this->router = $router;
-        $this->actionAttribute = $actionAttribute;
     }
 
     /**
@@ -76,6 +72,7 @@ class FastRouteMiddleware implements MiddlewareInterface
         }
 
         $request = $request->withAttribute($this->actionAttribute, $route[1]);
+        $request = $request->withAttribute($this->routeAttribute, $this->router->getRouteName($path));
 
         return $request;
     }

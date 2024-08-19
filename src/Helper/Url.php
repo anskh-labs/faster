@@ -15,9 +15,9 @@ namespace Faster\Helper;
  */
 class Url
 {
-    static ?string $basePath = null;
-    static ?string $hostUrl = null;
-    static ?array $parseurl = null;
+    static string|null $basePath = null;
+    static string|null $hostUrl = null;
+    static array|null $parseurl = null;
 
     /**
      * getBasePath
@@ -66,10 +66,22 @@ class Url
      */
     public static function getHostUrl(string $path = ''): string
     {
+        static::$hostUrl = $_ENV['APP_URL'] ?? null;
         if (static::$hostUrl === null) {
+            $isHttps =
+                $_SERVER['HTTPS']
+                ?? $_SERVER['REQUEST_SCHEME']
+                ?? $_SERVER['HTTP_X_FORWARDED_PROTO']
+                ?? null;
+
+            $isHttps = $isHttps && (
+                strcasecmp('on', $isHttps) == 0
+                || strcasecmp('https', $isHttps) == 0
+            );
+
             static::$hostUrl = sprintf(
                 "%s%s",
-                isset($_SERVER['HTTPS']) ? 'https://' : 'http://',
+                $isHttps ? 'https://' : 'http://',
                 $_SERVER['HTTP_HOST']
             );
         }

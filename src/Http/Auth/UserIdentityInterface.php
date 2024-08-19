@@ -20,7 +20,7 @@ interface UserIdentityInterface
      *
      * @return string|int|null
      */
-    public function getId();
+    public function getId() : string|int|null;
     /**
      * getRoles
      *

@@ -112,7 +112,6 @@ class MigrationCommand implements CommandInterface
                 $columns['migration'] = 'VARCHAR(255) NOT NULL';
                 $columns['action'] = 'VARCHAR(20) NOT NULL';
                 $columns['create_at'] = 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP';
-                $columns['update_at'] = 'TIMESTAMP NULL';
                 $primary[] = 'id';
                 $unique[] = 'migration';
                 $unique[] = 'action';
@@ -122,7 +121,6 @@ class MigrationCommand implements CommandInterface
                 $columns['migration'] = 'VARCHAR(255) NOT NULL';
                 $columns['action'] = 'VARCHAR(20) NOT NULL';
                 $columns['create_at'] = 'TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP';
-                $columns['update_at'] = 'TEXT NULL';
                 $primary[] = 'id';
                 $unique[] = 'migration';
                 $unique[] = 'action';
@@ -132,7 +130,6 @@ class MigrationCommand implements CommandInterface
                 $columns['migration'] = 'VARCHAR(255) NOT NULL';
                 $columns['action'] = 'VARCHAR(20) NOT NULL';
                 $columns['create_at'] = 'DATETIME NOT NULL DEFAULT GETDATE()';
-                $columns['update_at'] = 'DATETIME NULL';
                 $primary[] = 'id';
                 $unique[] = 'migration';
                 $unique[] = 'action';
@@ -142,7 +139,6 @@ class MigrationCommand implements CommandInterface
                 $columns['migration'] = 'VARCHAR(255) NOT NULL';
                 $columns['action'] = 'VARCHAR(20) NOT NULL';
                 $columns['create_at'] = 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP';
-                $columns['update_at'] = 'TIMESTAMP NULL';
                 $primary[] = 'id';
                 $unique[] = 'migration';
                 $unique[] = 'action';

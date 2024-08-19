@@ -38,11 +38,24 @@ interface AuthProviderInterface
      *
      * @return array
      */
-    public function getRoles(): array;    
+    public function getRoles(): array;       
     /**
      * getPermissions
      *
+     * @param  array|null $roles
      * @return array
      */
-    public function getPermissions(): array;
+    public function getPermissions(array|null $roles = null): array;    
+    /**
+     * getUserHashAttribute
+     *
+     * @return string
+     */
+    public function getUserHashAttribute(): string;    
+    /**
+     * getUserIdAttribute
+     *
+     * @return string
+     */
+    public function getUserIdAttribute(): string;
 }

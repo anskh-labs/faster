@@ -15,11 +15,6 @@ namespace Faster\Http\Auth;
  */
 class AuthProvider implements AuthProviderInterface
 {
-    private string $loginUri;
-    private string $logoutUri;
-    private array $roles;
-    private array $permissions;
-
     /**
      * __construct
      *
@@ -29,12 +24,8 @@ class AuthProvider implements AuthProviderInterface
      * @param  array $rolePermissions
      * @return void
      */
-    public function __construct(string $loginUri = '', string $logoutUri = '', array $roles = [], array $permissions = [])
+    public function __construct(private string $loginUri = '', private string $logoutUri = '', private array $roles = [], private array $permissions = [])
     {
-        $this->loginUri = $loginUri;
-        $this->logoutUri = $logoutUri;
-        $this->roles = $roles;
-        $this->permissions = $permissions;
     }
     /**
      * @inheritdoc
@@ -67,8 +58,33 @@ class AuthProvider implements AuthProviderInterface
     /**
      * @inheritdoc
      */
-    public function getPermissions(): array
+    public function getPermissions(array|null $roles = null): array
     {
+        if(!empty($roles)){
+            $permissions = [];
+            foreach ($roles as $role) {
+                $permissions = array_merge($permissions, $this->permissions[$role]);
+            }
+            return $permissions;
+        }
         return $this->permissions;
+    }
+    /**
+     * getUserHashAttribute
+     *
+     * @return string
+     */
+    public function getUserHashAttribute(): string
+    {
+        return '__user_hash';
+    }
+    /**
+     * getUserIdAttribute
+     *
+     * @return string
+     */
+    public function getUserIdAttribute(): string
+    {
+        return '__user_id';
     }
 }

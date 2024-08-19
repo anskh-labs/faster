@@ -7,7 +7,7 @@ namespace Faster\Model;
 use Faster\Helper\Service;
 use DateTime;
 use Exception;
-use Faster\Component\Enums\PrimitiveTypeEnum;
+use Faster\Component\Enums\DataTypeEnum;
 use Faster\Component\Enums\RuleEnum;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -53,9 +53,6 @@ abstract class FormModel extends Model
     protected bool $skipValidation;
     protected array $errors = [];
     protected array $labels = [];
-    protected bool $isEdit;
-    protected string $name;
-    protected string $defaultAttribute;
 
     /**
      * __construct
@@ -65,11 +62,8 @@ abstract class FormModel extends Model
      * @param  bool $isEdit
      * @return void
      */
-    public function __construct(string $name, string $defaultAttribute, bool $isEdit = false)
+    public function __construct(private string $name, private string $defaultAttribute, private bool $isEdit = false)
     {
-        $this->name = $name;
-        $this->defaultAttribute = $defaultAttribute;
-        $this->isEdit = $isEdit;
         $this->skipValidation = false;
     }
     /**
@@ -78,11 +72,11 @@ abstract class FormModel extends Model
      * @param  string $property
      * @param  string $type
      * @param  null|string|array $rule
-     * @param  ?string $label
+     * @param  string|null $label
      * @param  mixed $defaultValue
      * @return void
      */
-    public function addProperty(string $property, string $type = PrimitiveTypeEnum::STRING, $rule = null, ?string $label = null, $defaultValue = null): void
+    public function addProperty(string $property, string $type = DataTypeEnum::STRING, $rule = null, string|null $label = null, mixed $defaultValue = null): void
     {
         $this->types[$property] = $type;
         $this->storage[$property] = $defaultValue;
@@ -118,7 +112,16 @@ abstract class FormModel extends Model
      */
     public function isCsrfEnabled(): bool
     {
-        return $this->isCsrfEnabled;
+        return config('security.csrf.enable');
+    }    
+    /**
+     * csrfTokenName
+     *
+     * @return string
+     */
+    public function csrfTokenName(): string
+    {
+        return config('security.csrf.name');
     }
     /**
      * setRule
@@ -127,7 +130,7 @@ abstract class FormModel extends Model
      * @param  null|string|array $rule
      * @return void
      */
-    public function setRule(string $attribute, $rule): void
+    public function setRule(string $attribute, null|string|array $rule): void
     {
         if (property_exists($this, $attribute)) {
             $this->rules[$attribute] = $rule;
@@ -200,6 +203,18 @@ abstract class FormModel extends Model
     public function fillAndValidate(array $data): bool
     {
         $this->fill($data);
+
+        if ($this->isCsrfEnabled()) {
+
+            if ($this->skipValidation) {
+                return true;
+            }
+            $csrf_token = $data[$this->csrfTokenName()] ?? '';
+            if (!$csrf_token || Service::session()->validateCsrfToken($this->name, $csrf_token) === false) {
+                $this->addError('Csrf token tidak tersedia/tidak valid');
+                return false;
+            }
+        }
 
         return $this->validate();
     }
@@ -449,7 +464,7 @@ abstract class FormModel extends Model
      * @param  mixed $param
      * @return void
      */
-    protected function addErrorForRule(string $rule, string $attribute, $param = null): void
+    protected function addErrorForRule(string $rule, string $attribute, mixed $param = null): void
     {
         $message = $this->messages[$rule] ?? '';
         if (!empty($message)) {
@@ -462,11 +477,11 @@ abstract class FormModel extends Model
      * addError
      *
      * @param  string $message
-     * @param  ?string $attribute
+     * @param  string|null $attribute
      * 
      * @return void
      */
-    public function addError(string $message, ?string $attribute = null): void
+    public function addError(string $message, string|null $attribute = null): void
     {
         $attribute = $attribute ?? $this->defaultAttribute;
         $this->errors[$attribute][] = $message;
@@ -474,10 +489,10 @@ abstract class FormModel extends Model
     /**
      * hasError
      *
-     * @param  ?string $attribute
+     * @param  string|null $attribute
      * @return bool
      */
-    public function hasError(?string $attribute = null): bool
+    public function hasError(string|null $attribute = null): bool
     {
         if (is_null($attribute)) {
             return !empty($this->errors);
@@ -488,10 +503,10 @@ abstract class FormModel extends Model
     /**
      * firstError
      *
-     * @param  ?string $attribute
+     * @param  string|null $attribute
      * @return string|array
      */
-    public function firstError(?string $attribute = null)
+    public function firstError(string|null $attribute = null)
     {
         if ($attribute === null) {
             $message = [];
@@ -505,10 +520,10 @@ abstract class FormModel extends Model
     /**
      * getError
      *
-     * @param  ?string $attribute
+     * @param  string|null $attribute
      * @return array
      */
-    public function getError(?string $attribute = null): array
+    public function getError(string|null $attribute = null): array
     {
         if ($attribute === null) {
             $message = [];

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Faster\Html;
 
-use Faster\Helper\Config;
-use Faster\Helper\Html;
 use Faster\Helper\Url;
 use Faster\Model\DbPaginationInterface;
 
@@ -24,6 +22,7 @@ class Pagination implements DbPaginationInterface
     private int $record_count;
     private int $per_page;
     private int $current_page;
+    private int $current_record_count;
     private int $offset;
     private string $html;
     private array $query = [];
@@ -31,11 +30,11 @@ class Pagination implements DbPaginationInterface
     /**
      * __construct
      *
-     * @param  mixed $total_records
-     * @param  mixed $per_page
+     * @param  int $total_records
+     * @param  int|null $per_page
      * @return void
      */
-    public function __construct(int $total_records, ?int $per_page = null)
+    public function __construct(int $total_records, int|null $per_page = null)
     {
         $this->record_count = $total_records;
 
@@ -46,17 +45,18 @@ class Pagination implements DbPaginationInterface
 
         $this->current_page = isset($this->query['page']) ? intval($this->query['page']) : 1;
         if(is_null($per_page)){
-            $per_page = Config::get('view.pagination.per_page');
+            $per_page = config('view.pagination.per_page');
         }
         $this->per_page = isset($this->query['limit']) ? intval($this->query['limit']) : $per_page;
         $this->page_count = intval($this->record_count / $this->per_page);
         if (($this->record_count % $this->per_page) > 0) {
             $this->page_count += 1;
         }
-        if ($this->current_page > $this->page_count) {
-            $this->current_page = $this->page_count;
+        if ($this->current_page > max(1,$this->page_count)) {
+            $this->current_page = max(1,$this->page_count);
         }
         $this->offset = ($this->current_page - 1) * $this->per_page;
+        $this->current_record_count = min($this->per_page, $this->record_count - $this->offset);
 
         $html = $this->begin();
 
@@ -153,7 +153,7 @@ class Pagination implements DbPaginationInterface
     /**
      * currentPageActive
      *
-     * @param  mixed $page_no
+     * @param  int $page_no
      * @return string
      */
     private function currentPageActive(int $page_no): string
@@ -163,7 +163,7 @@ class Pagination implements DbPaginationInterface
     /**
      * prevButtonActive
      *
-     * @param  mixed $page_no
+     * @param  int $page_no
      * @return string
      */
     private function prevButtonActive(int $page_no): string
@@ -183,7 +183,7 @@ class Pagination implements DbPaginationInterface
     /**
      * pageButtonActive
      *
-     * @param  mixed $page_no
+     * @param  int $page_no
      * @return string
      */
     private function pageButtonActive(int $page_no): string
@@ -202,7 +202,7 @@ class Pagination implements DbPaginationInterface
     /**
      * pageButtonSelected
      *
-     * @param  mixed $page_no
+     * @param  int $page_no
      * @return string
      */
     private function pageButtonSelected(int $page_no): string
@@ -221,7 +221,7 @@ class Pagination implements DbPaginationInterface
     /**
      * nextButtonActive
      *
-     * @param  mixed $page_no
+     * @param  int $page_no
      * @return string
      */
     private function nextButtonActive(int $page_no): string
@@ -231,7 +231,7 @@ class Pagination implements DbPaginationInterface
     /**
      * getUrl
      *
-     * @param  mixed $page_no
+     * @param  int $page_no
      * @return string
      */
     private function getUrl(int $page_no): string
@@ -292,7 +292,16 @@ class Pagination implements DbPaginationInterface
      */
     public function currentPage(): int
     {
-        return $this->current_page;
+        return $this->record_count - $this->current_page;
+    }
+    /**
+     * currentRecordCount
+     *
+     * @return int
+     */
+    public function currentRecordCount(): int
+    {
+        return $this->current_record_count;
     }
     /**
      * offset
