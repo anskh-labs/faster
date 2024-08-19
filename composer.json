@@ -31,13 +31,6 @@
   "scripts": {
     "post-update-cmd": [
       "composer dump-autoload"
-    ],
-    "db:migrate": [
-      "php -f migrations.php up",
-      "php -f migrations.php seed"
-    ],
-    "db:up": "php -f migrations.php up",
-    "db:seed": "php -f migrations.php seed",
-    "db:down": "php -f migrations.php down"
+    ]
   }
 }
