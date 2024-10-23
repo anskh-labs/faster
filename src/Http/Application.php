@@ -14,6 +14,8 @@ use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 use Throwable;
 
 /**
@@ -66,7 +68,21 @@ class Application
         $this->response = $this->requestHandler->handle($this->request);
 
         if (headers_sent() === false) {
-            $this->emitter->emit($this->response);
+            try{
+                $this->emitter->emit($this->response);
+            }catch(Throwable $t){
+                $debug = (bool)$_ENV['APP_DEBUG'] ?? true;
+                if($debug) {
+                    $whoops = make(Run::class);
+                    $whoops->allowQuit(false);
+                    $whoops->writeToOutput(false);
+                    $whoops->pushHandler(make(PrettyPageHandler::class));
+                    $output = $whoops->handleException($t);
+                    echo $output;
+                }else{
+                    echo '<h1>Error</h1> <p>' . $t->getMessage() . '</p>';
+                }
+            }
         }
     }
     /**
